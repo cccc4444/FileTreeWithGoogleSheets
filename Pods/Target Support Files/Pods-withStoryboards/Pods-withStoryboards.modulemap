@@ -1,0 +1,6 @@
+framework module Pods_withStoryboards {
+  umbrella header "Pods-withStoryboards-umbrella.h"
+
+  export *
+  module * { export * }
+}

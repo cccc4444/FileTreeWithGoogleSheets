@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -13,7 +14,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+            if error != nil || user == nil {
+                // Show the app's signed-out state.
+                print("not logged in")
+            } else {
+                // Show the app's signed-in state.
+                print("logged in: \(user?.profile?.name ?? "")")
+                Globals.shared.gUser = user!
+                Globals.shared.sheetService.authorizer = Globals.shared.gUser.authentication.fetcherAuthorizer()
+            }
+        }
+
+        Globals.shared.sheetService.apiKey = Globals.shared.YOUR_API_KEY
+        
+        
         return true
     }
 
