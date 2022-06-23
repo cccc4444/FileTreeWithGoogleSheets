@@ -21,10 +21,6 @@ The app is composed of a stack of screens, each displaying contents of a particu
  </table>
 
 
-
-
-## Getting Started
-
 ### Features
 
 - Signing in and out of Google account
