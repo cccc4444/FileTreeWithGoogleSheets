@@ -10,10 +10,12 @@ import Foundation
 class FilesList {
     
     var arr: [[String]] = []
-    var rootEntities: [String] = []
-    var rootTypes: [String] = []
-    var nestedEntities: [String] = []
-    var nestedTypes: [String] = []
+    var rootEntities: [[String]] = []
+
+    var nestedEntities: [[String]] = []
+
+    var dictOfRootWithCildren = [String: [String]]()
+    var dictOfInnerWithChildren = [String:[String]]()
     
     static var allFilesInstance = FilesList()
     

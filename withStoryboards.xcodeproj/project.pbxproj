@@ -18,6 +18,9 @@
 		1B1CCE1A28607589009F531E /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1CCE1928607589009F531E /* Globals.swift */; };
 		1B1CCE2128609A85009F531E /* ReqestsToApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1CCE2028609A85009F531E /* ReqestsToApi.swift */; };
 		1B1CCE232860A6BB009F531E /* FilesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1CCE222860A6BB009F531E /* FilesList.swift */; };
+		1B88CA5128648688004F1749 /* DetailedOneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B88CA5028648688004F1749 /* DetailedOneViewController.swift */; };
+		1B88CA53286488BA004F1749 /* DetailedOneTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B88CA52286488BA004F1749 /* DetailedOneTableViewCell.swift */; };
+		1B88CA55286488D6004F1749 /* DetailedOneCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B88CA54286488D6004F1749 /* DetailedOneCollectionViewCell.swift */; };
 		251C71D35B33EEE1152FD29B /* Pods_withStoryboards.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69D24FF070E20C59BDDAAB35 /* Pods_withStoryboards.framework */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +38,9 @@
 		1B1CCE1928607589009F531E /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		1B1CCE2028609A85009F531E /* ReqestsToApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReqestsToApi.swift; sourceTree = "<group>"; };
 		1B1CCE222860A6BB009F531E /* FilesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesList.swift; sourceTree = "<group>"; };
+		1B88CA5028648688004F1749 /* DetailedOneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedOneViewController.swift; sourceTree = "<group>"; };
+		1B88CA52286488BA004F1749 /* DetailedOneTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedOneTableViewCell.swift; sourceTree = "<group>"; };
+		1B88CA54286488D6004F1749 /* DetailedOneCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedOneCollectionViewCell.swift; sourceTree = "<group>"; };
 		69D24FF070E20C59BDDAAB35 /* Pods_withStoryboards.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_withStoryboards.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88C4C55FF54455F81F9CE502 /* Pods-withStoryboards.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-withStoryboards.release.xcconfig"; path = "Target Support Files/Pods-withStoryboards/Pods-withStoryboards.release.xcconfig"; sourceTree = "<group>"; };
 		9FF5A8ED5E492A4B35396B8A /* Pods-withStoryboards.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-withStoryboards.debug.xcconfig"; path = "Target Support Files/Pods-withStoryboards/Pods-withStoryboards.debug.xcconfig"; sourceTree = "<group>"; };
@@ -92,6 +98,8 @@
 			children = (
 				1B086C79285869AE00E82094 /* TableViewCell.swift */,
 				1B086C7B285869C000E82094 /* CollectionViewCell.swift */,
+				1B88CA52286488BA004F1749 /* DetailedOneTableViewCell.swift */,
+				1B88CA54286488D6004F1749 /* DetailedOneCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -100,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				1B086C662858633C00E82094 /* ViewController.swift */,
+				1B88CA5028648688004F1749 /* DetailedOneViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -257,9 +266,12 @@
 				1B1CCE2128609A85009F531E /* ReqestsToApi.swift in Sources */,
 				1B086C672858633C00E82094 /* ViewController.swift in Sources */,
 				1B1CCE232860A6BB009F531E /* FilesList.swift in Sources */,
+				1B88CA5128648688004F1749 /* DetailedOneViewController.swift in Sources */,
 				1B1CCE1A28607589009F531E /* Globals.swift in Sources */,
+				1B88CA55286488D6004F1749 /* DetailedOneCollectionViewCell.swift in Sources */,
 				1B086C7A285869AE00E82094 /* TableViewCell.swift in Sources */,
 				1B086C632858633C00E82094 /* AppDelegate.swift in Sources */,
+				1B88CA53286488BA004F1749 /* DetailedOneTableViewCell.swift in Sources */,
 				1B086C652858633C00E82094 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -16,7 +16,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var ProfileBarButton: UIBarButtonItem!
     
-    
+
     var isListView = true
     
     private let refreshControlForTable = UIRefreshControl()
@@ -35,8 +35,47 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         signInWithDelay()
         refresherInitialisers()
         
+        RequestsToSheets.requestsInstance.read()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+            self.tableView.reloadData()
+            self.collectionView.reloadData()
+            self.createDicts()
+        }
+        
+                
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         
     }
+    
+    func createDicts(){
+        for i in FilesList.allFilesInstance.rootEntities{
+            var tempArray = [String]()
+            for j in FilesList.allFilesInstance.nestedEntities{
+                if i[0] == j[1]{
+                    tempArray.append(j[3])
+                }
+            }
+            FilesList.allFilesInstance.dictOfRootWithCildren[i[3]] = tempArray
+        }
+
+        for i in FilesList.allFilesInstance.nestedEntities{
+            var tempArray = [String]()
+            for j in FilesList.allFilesInstance.nestedEntities{
+                if i[0] == j[1]{
+                    tempArray.append(j[3])
+                }
+            }
+            FilesList.allFilesInstance.dictOfInnerWithChildren[i[3]] = tempArray
+        }
+
+
+        
+    }
+    
+    
     
     private func refresherInitialisers(){
         refreshControlForTable.addTarget(self, action: #selector(didPullToRefresh(_:)), for: .valueChanged)
@@ -54,16 +93,18 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     
     @objc
     private func didPullToRefresh(_ sender: Any) {
-        // Do you your api calls in here, and then asynchronously remember to stop the
-        // refreshing when you've got a result (either positive or negative)
+
         
         RequestsToSheets.requestsInstance.read()
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1){
             self.tableView.reloadData()
             self.collectionView.reloadData()
+            self.createDicts()
         }
         refreshControlForTable.endRefreshing()
         refreshControlForCollection.endRefreshing()
+        
         
     }
     
@@ -78,22 +119,15 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     private func contextMenu(){
         var menuItems: [UIAction] {
             return [
-                UIAction(title: "Sign In", image: UIImage(systemName: "sun.max"), handler: {(_) in
+                UIAction(title: "Sign In", image: UIImage(named:"google.png"), handler: {(_) in
                     RequestsToSheets.requestsInstance.signIn(self: self)
                 }),
-                UIAction(title: "Sign Out", image: UIImage(systemName: "moon"), handler: { (_) in
+                UIAction(title: "Sign Out", image: UIImage(systemName: "person.crop.circle.badge.xmark"), handler: { (_) in
                     RequestsToSheets.requestsInstance.signOut(self: self)
                 }),
-                UIAction(title: "Add Scope", image: UIImage(systemName: "trash"), handler: { (_) in
+                UIAction(title: "Add Scope", image: UIImage(systemName: "plus"), handler: { (_) in
                     RequestsToSheets.requestsInstance.addScope(self: self)
                 }),
-                UIAction(title: "Read", image: UIImage(systemName: "trash"), handler: { (_) in
-                    RequestsToSheets.requestsInstance.read()
-                    self.view.makeToast("Swipe down refresh", duration: 2.0, position: .center)
-                }),
-                UIAction(title: "Write", image: UIImage(systemName: "trash"), handler: { (_) in
-                    RequestsToSheets.requestsInstance.write()
-                })
             ]
         }
         var demoMenu: UIMenu {
@@ -106,8 +140,34 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     
     
     @IBAction func AddFolderButton(_ sender: Any) {
+        let alert = UIAlertController(title: "File name", message: "Enter the file name", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = "Type here"
+        }
+
+
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0]
+            FilesList.allFilesInstance.rootEntities.append(["SSS", "", "f", "\(textField!.text!)"])
+            RequestsToSheets.requestsInstance.write(self: self, primary: "sss", parent: "", type: "f", name: (textField?.text)!)
+            
+//            RequestsToSheets.requestsInstance.read()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                self.tableView.reloadData()
+                self.collectionView.reloadData()
+                self.createDicts()
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+
+        self.present(alert, animated: true, completion: nil)
+        
+        
     }
     @IBAction func AddFileButton(_ sender: Any) {
+        
     }
     @IBAction func SwitchViewButton(_ sender: Any) {
         if isListView{
@@ -140,16 +200,46 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
 
-            cell.name.text = FilesList.allFilesInstance.rootEntities[indexPath.row]
-            switch FilesList.allFilesInstance.rootTypes[indexPath.row] {
-                case "d":
-                    cell.tableImage.image = UIImage(systemName: "folder")
-                default:
-                    cell.tableImage.image = UIImage(systemName: "doc.richtext")
-                }
 
+        cell.name.text = FilesList.allFilesInstance.rootEntities[indexPath.row][3]
+        switch FilesList.allFilesInstance.rootEntities[indexPath.row][2] {
+        case "d":
+            cell.tableImage.image = UIImage(systemName: "folder")
+        default:
+            cell.tableImage.image = UIImage(systemName: "doc.richtext")
+        }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var nestedEntitiesWithTypesPairs = [String:String]()
+        if FilesList.allFilesInstance.dictOfRootWithCildren.keys.contains(FilesList.allFilesInstance.rootEntities[indexPath.row][3]){
+            let insideEntities =  FilesList.allFilesInstance.dictOfRootWithCildren[FilesList.allFilesInstance.rootEntities[indexPath.row][3]]!
+            let typeOfThisEntity = (FilesList.allFilesInstance.rootEntities[indexPath.row][2])
+            
+            
+            
+            for i in insideEntities{
+                for j in FilesList.allFilesInstance.nestedEntities{
+                    if j[3].contains(i){
+                        nestedEntitiesWithTypesPairs[j[3]] = j[2]
+                    }
+                }
+            }
+            
+        }
+        
+        if FilesList.allFilesInstance.rootEntities[indexPath.row][2] == "d"{
+            let detailedVC = storyboard?.instantiateViewController(withIdentifier: "DetailedOneViewController") as? DetailedOneViewController
+            detailedVC?.isListView = self.isListView
+            detailedVC?.nestedEntities = nestedEntitiesWithTypesPairs
+            detailedVC?.title = FilesList.allFilesInstance.rootEntities[indexPath.row][3]
+            detailedVC?.parentID = FilesList.allFilesInstance.rootEntities[indexPath.row][0]
+            self.navigationController?.pushViewController(detailedVC!, animated: true)
+        }
+        
+        
     }
     
   
@@ -165,26 +255,43 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
-        
-            cell.name.text = FilesList.allFilesInstance.rootEntities[indexPath.row]
-        switch FilesList.allFilesInstance.rootTypes[indexPath.row] {
-            case "d":
-                cell.collectionImage.image = UIImage(systemName: "folder")
-            default:
-                cell.collectionImage.image = UIImage(systemName: "doc.richtext")
-            }
-
-//        if FilesList.allFilesInstance.arr[indexPath.row][1] == ""{
-//            print("HEEEEY: \(FilesList.allFilesInstance.arr[indexPath.row][3])")
-//            cell.name.text = FilesList.allFilesInstance.arr[indexPath.row][3]
-//        }
-            
-        
-    
-        
+        cell.name.text = FilesList.allFilesInstance.rootEntities[indexPath.row][3]
+        switch FilesList.allFilesInstance.rootEntities[indexPath.row][2] {
+        case "d":
+            cell.collectionImage.image = UIImage(systemName: "folder")
+        default:
+            cell.collectionImage.image = UIImage(systemName: "doc.richtext")
+        }
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        var nestedEntitiesWithTypesPairs = [String:String]()
+        if FilesList.allFilesInstance.dictOfRootWithCildren.keys.contains(FilesList.allFilesInstance.rootEntities[indexPath.row][3]){
+            let insideEntities =  FilesList.allFilesInstance.dictOfRootWithCildren[FilesList.allFilesInstance.rootEntities[indexPath.row][3]]!
+            let typeOfThisEntity = (FilesList.allFilesInstance.rootEntities[indexPath.row][2])
+            
+            
+            
+            for i in insideEntities{
+                for j in FilesList.allFilesInstance.nestedEntities{
+                    if j[3].contains(i){
+                        nestedEntitiesWithTypesPairs[j[3]] = j[2]
+                    }
+                }
+            }
+            
+        }
+        if FilesList.allFilesInstance.rootEntities[indexPath.row][2] == "d"{
+            let detailedVC = storyboard?.instantiateViewController(withIdentifier: "DetailedOneViewController") as? DetailedOneViewController
+            detailedVC?.isListView = self.isListView
+            detailedVC?.nestedEntities = nestedEntitiesWithTypesPairs
+            detailedVC?.title = FilesList.allFilesInstance.rootEntities[indexPath.row][3]
+            detailedVC?.parentID = FilesList.allFilesInstance.rootEntities[indexPath.row][0]
+            self.navigationController?.pushViewController(detailedVC!, animated: true)
+        }
+        
+    }
     
 }
 

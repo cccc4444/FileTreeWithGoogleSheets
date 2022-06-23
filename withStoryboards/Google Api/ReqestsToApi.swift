@@ -11,6 +11,15 @@ import GoogleSignIn
 import GTMSessionFetcher
 import Toast_Swift
 
+var numOfRowInSheets: Int = 37
+var range = "Sheet1!A1:D37"
+func defineRangeForSaving() -> String{
+    let range = "Sheet1!A\(numOfRowInSheets):D" + String(numOfRowInSheets)
+    return range
+}
+func updateRange(){
+    range = "Sheet1!A1:D\(numOfRowInSheets)"
+}
 
 class RequestsToSheets {
     
@@ -81,8 +90,8 @@ class RequestsToSheets {
     }
     
     func read(){
-        
-        let range = "Sheet1!A1:D37"
+        updateRange()
+        print(range)
         let query = GTLRSheetsQuery_SpreadsheetsValuesGet.query(withSpreadsheetId: Globals.shared.YOUR_SHEET_ID, range: range)
         Globals.shared.sheetService.executeQuery(query) { (_: GTLRServiceTicket, result: Any?, error: Error?) in
             if let error = error {
@@ -92,15 +101,11 @@ class RequestsToSheets {
                 let data = result as? GTLRSheets_ValueRange
                 let rows = data?.values as? [[String]] ?? [[""]]
                 for row in rows {
-                    print(row)
-                    if row[1] == "" && !FilesList.allFilesInstance.rootEntities.contains(row[3]){
-                        FilesList.allFilesInstance.rootEntities.append(row[3])
-                        switch row[2] {
-                        case "d":
-                            FilesList.allFilesInstance.rootTypes.append("d")
-                        default:
-                            FilesList.allFilesInstance.rootTypes.append("f")
-                        }
+                    if row[1] == "" && !FilesList.allFilesInstance.rootEntities.contains(row){
+                        FilesList.allFilesInstance.rootEntities.append(row)
+                    }
+                    else if row[1] != "" && !FilesList.allFilesInstance.nestedEntities.contains(row){
+                        FilesList.allFilesInstance.nestedEntities.append(row)
                     }
                     
                    
@@ -108,14 +113,46 @@ class RequestsToSheets {
                 }
                 FilesList.allFilesInstance.arr = rows
                 print("success")
-                print("All elements: \(FilesList.allFilesInstance.arr)")
-                print("Root elements: \(FilesList.allFilesInstance.rootEntities)")
+//                print("Root elements: \(FilesList.allFilesInstance.rootEntities)")
+//                print("Nested elements: \(FilesList.allFilesInstance.nestedEntities)")
             }
         }
         
     }
     
-    func write(){
+    func write(self: UIViewController, primary: String, parent: String, type: String, name: String){
+        numOfRowInSheets += 1
+        updateRange()
+        
+        
+        let valueRange = GTLRSheets_ValueRange(json: [
+            "majorDimension": "ROWS",
+            "range": defineRangeForSaving(),
+            "values": [
+                [
+                    primary, parent, type, name
+                ],
+            ],
+        ])
+        let query = GTLRSheetsQuery_SpreadsheetsValuesUpdate.query(withObject: valueRange, spreadsheetId: Globals.shared.YOUR_SHEET_ID, range: defineRangeForSaving())
+        query.valueInputOption = "USER_ENTERED"
+        query.includeValuesInResponse = true
+
+        Globals.shared.sheetService.executeQuery(query) { (_: GTLRServiceTicket, result: Any?, error: Error?) in
+            if let error = error {
+                print("Error", error.localizedDescription)
+                self.view.makeToast(error.localizedDescription)
+            } else {
+                let data = result as? GTLRSheets_UpdateValuesResponse
+                let rows = data?.updatedData?.values as? [[String]] ?? [[""]]
+                for row in rows {
+                    print("row: ", row)
+                    self.view.makeToast("value \(row.first ?? "") wrote in \(defineRangeForSaving())")
+                }
+                print("success")
+            }
+        }
+        
         
         
     }
