@@ -16,7 +16,7 @@ The app is composed of a stack of screens, each displaying contents of a particu
     <td>Demo</td>
   </tr>
   <tr>
-    <td><img src="https://user-images.githubusercontent.com/30757557/175359952-6e286498-77c2-4e97-91a3-a32f65c9bf6f.mp4" width="200"></td>
+    <td><img src="https://user-images.githubusercontent.com/30757557/183657175-d7fab295-2f0a-4101-b250-0ace92dd06ac.gif" width="200"></td>
   </tr>
  </table>
 
